@@ -134,24 +134,19 @@
             mask-image: radial-gradient(ellipse at center, #000 0%, transparent 78%);
         }
 
-        .shooting-star {
+        .shooting-stars {
             position: fixed;
-            top: 10%;
-            left: -12%;
-            width: 130px;
-            height: 2px;
-            border-radius: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9));
+            inset: 0;
             z-index: -1;
             pointer-events: none;
-            opacity: 0;
-            animation: shoot 11s ease-in 4s infinite;
+            overflow: hidden;
         }
-        @keyframes shoot {
-            0%   { transform: translate(0, 0) rotate(32deg); opacity: 0; }
-            1.5% { opacity: 1; }
-            7%   { transform: translate(62vw, 38vw) rotate(32deg); opacity: 0; }
-            100% { transform: translate(62vw, 38vw) rotate(32deg); opacity: 0; }
+        .shooting-star {
+            position: absolute;
+            height: 1.5px;
+            border-radius: 1.5px;
+            pointer-events: none;
+            will-change: transform, opacity;
         }
 
         /* ---------- Main card ---------- */
@@ -391,7 +386,7 @@
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
-            .shooting-star { display: none; }
+            .shooting-stars { display: none; }
         }
     </style>
 </head>
@@ -402,7 +397,7 @@
     <div class="aurora aurora--magenta" aria-hidden="true"></div>
     <div class="stars" id="stars" aria-hidden="true"></div>
     <div class="grid-overlay" aria-hidden="true"></div>
-    <div class="shooting-star" aria-hidden="true"></div>
+    <div class="shooting-stars" id="shootingStars" aria-hidden="true"></div>
 
     <!-- Main content -->
     <main class="container">
@@ -495,6 +490,71 @@
                     frag.appendChild(star);
                 }
                 starsContainer.appendChild(frag);
+            }
+
+            // Shooting stars — randomized position, angle, speed, and interval
+            var starContainer = document.getElementById('shootingStars');
+            if (starContainer && window.requestAnimationFrame) {
+                var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (!reduceMotion) {
+                    (function spawnLoop() {
+                        spawnShootingStar();
+                        setTimeout(spawnLoop, 3000 + Math.random() * 9000);
+                    })();
+                }
+
+                function spawnShootingStar() {
+                    var el = document.createElement('div');
+                    el.className = 'shooting-star';
+
+                    // Start position — biased toward upper portion of viewport
+                    var sx = 5 + Math.random() * 85;   // 5–90 vw
+                    var sy = 3 + Math.random() * 48;   // 3–51 vh
+
+                    // Direction — mostly right-to-left or left-to-right, always downward
+                    var goingRight = Math.random() > 0.3;
+                    var angleDeg = 18 + Math.random() * 38; // 18–56° below horizontal
+                    var angle = goingRight ? angleDeg : (180 - angleDeg);
+
+                    // Speed & duration
+                    var dur = 650 + Math.random() * 1300; // 0.65–1.95s
+
+                    // Tail length & thickness
+                    var tailLen = 70 + Math.random() * 100; // 70–170px
+                    var thickness = Math.random() > 0.6 ? 2 : 1.5;
+
+                    // Travel distance (px) — enough to cross a good chunk of viewport
+                    var vw = window.innerWidth;
+                    var travelPx = (30 + Math.random() * 35) * (vw / 100);
+
+                    // Brightness variation
+                    var alpha = 0.65 + Math.random() * 0.3;
+
+                    el.style.cssText =
+                        'top:' + sy + 'vh;' +
+                        'left:' + sx + 'vw;' +
+                        'width:' + tailLen + 'px;' +
+                        'height:' + thickness + 'px;' +
+                        'border-radius:' + thickness + 'px;' +
+                        'background:linear-gradient(90deg,transparent,rgba(255,255,255,' + alpha.toFixed(2) + '));' +
+                        'transform-origin:100% 50%;' +
+                        'opacity:0;';
+
+                    starContainer.appendChild(el);
+
+                    // Animate: rotate to angle, travel along local X axis (the rotated direction)
+                    var anim = el.animate([
+                        { transform: 'rotate(' + angle + 'deg) translateX(0px)', opacity: 0 },
+                        { opacity: alpha, offset: 0.08 },
+                        { opacity: alpha * 0.55, offset: 0.75 },
+                        { transform: 'rotate(' + angle + 'deg) translateX(' + travelPx + 'px)', opacity: 0 }
+                    ], {
+                        duration: dur,
+                        easing: 'linear'
+                    });
+
+                    anim.onfinish = function () { el.remove(); };
+                }
             }
 
             // Graceful fallback if the avatar image is missing
