@@ -1,0 +1,7 @@
+# Local dev artifacts — NOT part of the deployed GitHub Pages site.
+# Kept out of the public repo so they never get deployed or leak.
+notes.txt
+test.html
+index.github-backup.html
+*.github-backup.html
+.scratch/
