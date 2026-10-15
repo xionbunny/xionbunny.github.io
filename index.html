@@ -7,7 +7,7 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="color-scheme" content="dark">
-    <meta name="theme-color" content="#0a0a1a">
+    <meta name="theme-color" content="#070b12">
     <meta name="description" content="Official links for Xion Bunny — Discord, Twitter, Bluesky, Telegram, and Ko-fi.">
     <meta name="author" content="Xion Bunny">
     <link rel="canonical" href="https://xionbunny.github.io/">
@@ -26,18 +26,28 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="preload" as="image" href="avatar.webp" type="image/webp" fetchpriority="high">
 
     <style>
+        /* ---------- Design tokens ----------
+           One palette, one accent, one type scale. Everything below reads from these. */
         :root {
-            --neon-cyan: #00f3ff;
-            --neon-magenta: #ff007f;
-            --neon-purple: #b400ff;
-            --neon-blue: #0080ff;
-            --dark-bg: #0a0a1a;
-            --glass-bg: rgba(10, 20, 40, 0.6);
-            --text-dim: rgba(255, 255, 255, 0.72);
+            --bg: #070b12;
+            --panel: rgba(13, 19, 28, 0.72);
+            --surface: rgba(255, 255, 255, 0.032);
+            --surface-hover: rgba(255, 255, 255, 0.055);
+            --line: rgba(226, 234, 245, 0.10);
+            --line-strong: rgba(226, 234, 245, 0.17);
+            --text: #e7edf5;
+            --text-dim: rgba(226, 234, 245, 0.66);
+            --text-faint: rgba(226, 234, 245, 0.42);
+            --accent: #6aa9d8;          /* the only UI accent */
+            --radius: 14px;
+            --radius-sm: 10px;
+            --space: 8px;               /* base unit for the spacing scale */
+            --line-height: 1.5;         /* body copy */
+            --line-height-tight: 1.25;  /* headings */
         }
 
         * {
@@ -47,68 +57,48 @@
         }
 
         body {
-            font-family: 'Rajdhani', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--dark-bg);
-            color: #fff;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: var(--line-height);
             min-height: 100vh;
             min-height: 100svh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 24px 16px;
+            padding: calc(var(--space) * 4) calc(var(--space) * 2);
             position: relative;
             overflow-x: hidden;
         }
 
         ::selection {
-            background: rgba(0, 243, 255, 0.35);
+            background: rgba(106, 169, 216, 0.24);
             color: #fff;
         }
 
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: #05050f; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.25); border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 243, 255, 0.4); }
+        /* Firefox needs the same treatment as WebKit; without this the two engines
+           render the page differently for no reason. */
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(226, 234, 245, 0.14) transparent;
+        }
 
-        /* ---------- Background layers ---------- */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(226, 234, 245, 0.14); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(226, 234, 245, 0.22); }
+
+        /* ---------- Background layers ----------
+           The sky is ambient: one quiet horizon wash, no blobs, no competing focal points. */
         .starfield {
             position: fixed;
             inset: 0;
             z-index: -4;
             background:
-                /* Horizon / atmosphere glow */
-                radial-gradient(140% 45% at 50% 100%, rgba(0, 243, 255, 0.10), transparent 68%),
-                radial-gradient(120% 80% at 50% 0%, rgba(0, 243, 255, 0.06), transparent 60%),
-                radial-gradient(110% 90% at 80% 100%, rgba(180, 0, 255, 0.05), transparent 62%),
-                radial-gradient(ellipse at center, #101d2e 0%, #070a16 55%, #000000 100%);
+                radial-gradient(120% 55% at 50% 100%, rgba(96, 132, 178, 0.07), transparent 70%),
+                radial-gradient(90% 60% at 50% 8%, rgba(110, 148, 195, 0.045), transparent 65%),
+                linear-gradient(180deg, #0a1119 0%, #070b12 55%, #05080d 100%);
             pointer-events: none;
-        }
-
-        .aurora {
-            position: fixed;
-            width: 60vmax;
-            height: 60vmax;
-            border-radius: 50%;
-            filter: blur(90px);
-            opacity: 0.22;
-            z-index: -3;
-            pointer-events: none;
-            animation: drift 26s ease-in-out infinite alternate;
-        }
-        .aurora--cyan {
-            top: -22vmax;
-            left: -18vmax;
-            background: radial-gradient(circle, var(--neon-cyan), transparent 62%);
-        }
-        .aurora--magenta {
-            bottom: -26vmax;
-            right: -18vmax;
-            background: radial-gradient(circle, var(--neon-magenta), transparent 62%);
-            animation-delay: -13s;
-        }
-        @keyframes drift {
-            from { transform: translate(0, 0) scale(1); }
-            to   { transform: translate(5vmax, 4vmax) scale(1.12); }
         }
 
         .stars {
@@ -122,7 +112,8 @@
             -webkit-mask-image: radial-gradient(120% 110% at 50% 42%, #000 38%, rgba(0, 0, 0, 0.6) 72%, rgba(0, 0, 0, 0.15) 100%);
             mask-image: radial-gradient(120% 110% at 50% 42%, #000 38%, rgba(0, 0, 0, 0.6) 72%, rgba(0, 0, 0, 0.15) 100%);
         }
-        /* Static density layer (no DOM cost, works with JS disabled). */
+        /* Static density layer (no DOM cost, works with JS disabled). Kept quiet: the
+           sky is texture behind the card, not the subject of the page. */
         .stars::before {
             content: "";
             position: absolute;
@@ -131,42 +122,43 @@
                sizes made the dots line up into a visible lattice, which read as
                graph paper rather than sky. */
             background-image:
-                radial-gradient(1px 1px at 25px 35px, rgba(255, 255, 255, 0.5), transparent 50%),
-                radial-gradient(1px 1px at 120px 90px, rgba(205, 222, 255, 0.42), transparent 50%),
-                radial-gradient(1.5px 1.5px at 200px 150px, rgba(255, 255, 255, 0.55), transparent 50%),
-                radial-gradient(1px 1px at 300px 60px, rgba(190, 215, 255, 0.36), transparent 50%),
-                radial-gradient(1px 1px at 160px 180px, rgba(255, 255, 255, 0.45), transparent 50%),
-                radial-gradient(1.2px 1.2px at 90px 210px, rgba(0, 243, 255, 0.3), transparent 50%),
-                radial-gradient(1.5px 1.5px at 70px 120px, rgba(255, 255, 255, 0.4), transparent 50%),
-                radial-gradient(1.5px 1.5px at 240px 90px, rgba(205, 222, 255, 0.38), transparent 50%),
-                radial-gradient(2px 2px at 130px 60px, rgba(255, 255, 255, 0.42), transparent 50%),
-                radial-gradient(2px 2px at 210px 140px, rgba(190, 215, 255, 0.34), transparent 50%),
-                radial-gradient(1px 1px at 80px 190px, rgba(255, 255, 255, 0.4), transparent 50%),
-                radial-gradient(1.2px 1.2px at 190px 40px, rgba(0, 243, 255, 0.26), transparent 50%),
+                radial-gradient(1px 1px at 25px 35px, rgba(255, 255, 255, 0.34), transparent 50%),
+                radial-gradient(1px 1px at 120px 90px, rgba(205, 222, 255, 0.28), transparent 50%),
+                radial-gradient(1.5px 1.5px at 200px 150px, rgba(255, 255, 255, 0.36), transparent 50%),
+                radial-gradient(1px 1px at 300px 60px, rgba(190, 215, 255, 0.24), transparent 50%),
+                radial-gradient(1px 1px at 160px 180px, rgba(255, 255, 255, 0.30), transparent 50%),
+                radial-gradient(1.2px 1.2px at 90px 210px, rgba(150, 185, 225, 0.20), transparent 50%),
+                radial-gradient(1.5px 1.5px at 70px 120px, rgba(255, 255, 255, 0.27), transparent 50%),
+                radial-gradient(1.5px 1.5px at 240px 90px, rgba(205, 222, 255, 0.25), transparent 50%),
+                radial-gradient(2px 2px at 130px 60px, rgba(255, 255, 255, 0.28), transparent 50%),
+                radial-gradient(2px 2px at 210px 140px, rgba(190, 215, 255, 0.22), transparent 50%),
+                radial-gradient(1px 1px at 80px 190px, rgba(255, 255, 255, 0.26), transparent 50%),
+                radial-gradient(1.2px 1.2px at 190px 40px, rgba(150, 185, 225, 0.18), transparent 50%),
                 /* Faintest magnitude: sub-pixel dust, most visible on hi-DPI screens. */
-                radial-gradient(0.8px 0.8px at 47px 131px, rgba(210, 224, 248, 0.30), transparent 55%),
-                radial-gradient(0.8px 0.8px at 151px 214px, rgba(196, 212, 240, 0.26), transparent 55%),
-                radial-gradient(0.8px 0.8px at 268px 178px, rgba(224, 236, 255, 0.24), transparent 55%),
-                radial-gradient(1px 1px at 104px 268px, rgba(214, 228, 252, 0.28), transparent 55%),
-                radial-gradient(1px 1px at 236px 232px, rgba(204, 219, 246, 0.22), transparent 55%);
+                radial-gradient(0.8px 0.8px at 47px 131px, rgba(210, 224, 248, 0.20), transparent 55%),
+                radial-gradient(0.8px 0.8px at 151px 214px, rgba(196, 212, 240, 0.17), transparent 55%),
+                radial-gradient(0.8px 0.8px at 268px 178px, rgba(224, 236, 255, 0.15), transparent 55%),
+                radial-gradient(1px 1px at 104px 268px, rgba(214, 228, 252, 0.18), transparent 55%),
+                radial-gradient(1px 1px at 236px 232px, rgba(204, 219, 246, 0.14), transparent 55%);
             background-size: 341px 259px, 311px 229px, 271px 211px, 313px 173px, 199px 191px, 131px 229px, 173px 151px, 251px 199px, 151px 131px, 229px 191px, 113px 199px, 197px 113px, 139px 167px, 167px 137px, 191px 179px, 179px 149px, 149px 127px;
             background-repeat: repeat;
         }
         /* Milky Way band: soft diagonal haze carrying unresolved star dust, broken by a
-           dark dust lane (the Great Rift) where opaque clouds hide what is behind them. */
+           dark dust lane (the Great Rift) where opaque clouds hide what is behind them.
+           Held at texture level so it never competes with the card. */
         .stars::after {
             content: "";
             position: absolute;
             inset: 0;
             background-image:
-                radial-gradient(38% 7% at 58% 44%, rgba(4, 5, 12, 0.55), transparent 70%),
-                radial-gradient(24% 4% at 38% 52%, rgba(4, 5, 12, 0.38), transparent 72%),
-                linear-gradient(115deg, transparent 32%, rgba(176, 201, 245, 0.075) 45%, rgba(212, 229, 255, 0.055) 55%, transparent 70%),
-                radial-gradient(1px 1px at 14px 22px, rgba(228, 238, 255, 0.34), transparent 60%),
-                radial-gradient(1px 1px at 61px 47px, rgba(210, 224, 250, 0.28), transparent 60%),
-                radial-gradient(1.2px 1.2px at 97px 71px, rgba(236, 244, 255, 0.30), transparent 60%),
-                radial-gradient(1px 1px at 43px 89px, rgba(198, 214, 244, 0.24), transparent 60%),
-                radial-gradient(0.8px 0.8px at 78px 13px, rgba(224, 236, 252, 0.22), transparent 60%);
+                radial-gradient(38% 7% at 58% 44%, rgba(4, 5, 12, 0.45), transparent 70%),
+                radial-gradient(24% 4% at 38% 52%, rgba(4, 5, 12, 0.30), transparent 72%),
+                linear-gradient(115deg, transparent 32%, rgba(176, 201, 245, 0.055) 45%, rgba(212, 229, 255, 0.040) 55%, transparent 70%),
+                radial-gradient(1px 1px at 14px 22px, rgba(228, 238, 255, 0.22), transparent 60%),
+                radial-gradient(1px 1px at 61px 47px, rgba(210, 224, 250, 0.18), transparent 60%),
+                radial-gradient(1.2px 1.2px at 97px 71px, rgba(236, 244, 255, 0.19), transparent 60%),
+                radial-gradient(1px 1px at 43px 89px, rgba(198, 214, 244, 0.15), transparent 60%),
+                radial-gradient(0.8px 0.8px at 78px 13px, rgba(224, 236, 252, 0.14), transparent 60%);
             background-size: auto, auto, auto, 107px 97px, 89px 73px, 113px 83px, 71px 101px, 61px 53px;
             /* Keep the dust inside the band, thickest toward the galactic core. */
             -webkit-mask-image: linear-gradient(115deg, transparent 30%, rgba(0, 0, 0, 0.35) 42%, #000 52%, rgba(0, 0, 0, 0.45) 62%, transparent 72%);
@@ -185,7 +177,6 @@
         .star-layer--near {
             animation: drift-near 120s linear infinite alternate;
         }
-        /* Twinkling stars: three depth tiers, per-star vars for size/colour/timing. */
         .star {
             position: absolute;
             width: var(--s, 1.5px);
@@ -200,67 +191,53 @@
         .star--near {
             animation-name: twinkle-near;
             /* Glow follows the star's own tint (--c); --glow is an optional override */
-            box-shadow: 0 0 var(--g, 8px) 1px var(--glow, color-mix(in srgb, var(--c, #fff) 55%, transparent));
+            box-shadow: 0 0 var(--g, 8px) 1px var(--glow, color-mix(in srgb, var(--c, #fff) 40%, transparent));
         }
         /* Resolved disks and distant point sources do not scintillate: they hold a
            steady brightness, which is what makes them read differently from the rest. */
         .star--steady { animation: none; }
         .star--planet {
             animation: none;
-            box-shadow: 0 0 7px 1px var(--glow, color-mix(in srgb, var(--c, #fff) 45%, transparent));
+            box-shadow: 0 0 6px 1px var(--glow, color-mix(in srgb, var(--c, #fff) 32%, transparent));
         }
-        /* Hero stars: the sky's focal points — breathing glow + diffraction spikes. */
+        /* Hero stars: the sky's focal points. One quiet glow each — no diffraction
+           spikes, because spikes are what tipped the sky from 'atmosphere' to 'decoration'. */
         .star--hero {
             animation-name: twinkle-hero;
-            box-shadow: 0 0 var(--g, 14px) 2px var(--glow, color-mix(in srgb, var(--c, #fff) 60%, transparent));
+            box-shadow: 0 0 var(--g, 12px) 1px var(--glow, color-mix(in srgb, var(--c, #fff) 45%, transparent));
         }
-        .star--hero::before,
-        .star--hero::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: var(--spike, 16px);
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
-            transform: translate(-50%, -50%);
-            opacity: 0.55;
-            animation: spike-shimmer var(--sd, 7s) ease-in-out infinite alternate;
-            animation-delay: var(--dl, 0s);
-        }
-        .star--hero::after { transform: translate(-50%, -50%) rotate(90deg); }
         /* Scintillation depth follows apparent size: the smallest point sources flutter
-           hardest, large resolved disks breathe slowly. Uneven stops keep it from feeling
-           like a metronome. */
+           hardest, large resolved disks breathe slowly. Amplitudes kept narrow so the
+           sky shimmers rather than blinks. Uneven stops keep it from feeling like a
+           metronome. */
         @keyframes twinkle-far  {
-            0%, 100% { opacity: 0.10; }
-            18% { opacity: 0.44; }
-            31% { opacity: 0.20; }
-            48% { opacity: 0.55; }
-            66% { opacity: 0.26; }
-            82% { opacity: 0.40; }
+            0%, 100% { opacity: 0.12; }
+            18% { opacity: 0.30; }
+            31% { opacity: 0.18; }
+            48% { opacity: 0.36; }
+            66% { opacity: 0.20; }
+            82% { opacity: 0.28; }
         }
         @keyframes twinkle-mid  {
             0%, 100% { opacity: 0.30; }
-            22% { opacity: 0.68; }
-            40% { opacity: 0.52; }
-            58% { opacity: 0.85; }
-            76% { opacity: 0.62; }
+            22% { opacity: 0.52; }
+            40% { opacity: 0.42; }
+            58% { opacity: 0.62; }
+            76% { opacity: 0.48; }
         }
         @keyframes twinkle-near {
-            0%, 100% { opacity: 0.55; transform: scale(1); }
-            25% { opacity: 0.9; transform: scale(1.08); }
-            45% { opacity: 0.72; transform: scale(1.03); }
-            62% { opacity: 1; transform: scale(1.12); }
-            80% { opacity: 0.8; transform: scale(1.05); }
+            0%, 100% { opacity: 0.50; transform: scale(1); }
+            25% { opacity: 0.72; transform: scale(1.04); }
+            45% { opacity: 0.60; transform: scale(1.02); }
+            62% { opacity: 0.80; transform: scale(1.06); }
+            80% { opacity: 0.66; transform: scale(1.03); }
         }
         @keyframes twinkle-hero {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            35% { opacity: 0.92; transform: scale(1.14); }
-            50% { opacity: 1; transform: scale(1.18); }
-            70% { opacity: 0.86; transform: scale(1.1); }
+            0%, 100% { opacity: 0.55; transform: scale(1); }
+            35% { opacity: 0.78; transform: scale(1.08); }
+            50% { opacity: 0.85; transform: scale(1.10); }
+            70% { opacity: 0.72; transform: scale(1.06); }
         }
-        @keyframes spike-shimmer { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.7; } }
         @keyframes starfield-drift {
             from { transform: translate3d(0, 0, 0); }
             to   { transform: translate3d(-2%, -1.5%, 0); }
@@ -295,18 +272,21 @@
             border-radius: 50%;
             transform: translate(50%, -50%);
             background: #fff;
-            box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.6), 0 0 14px 4px var(--sglow, rgba(0, 243, 255, 0.22));
+            box-shadow: 0 0 5px 1px rgba(255, 255, 255, 0.45), 0 0 12px 3px var(--sglow, rgba(150, 190, 240, 0.16));
         }
-        /* Fireball heads flare unevenly rather than burning at a constant brightness. */
-        .shooting-star--fireball::before { animation: meteor-flare 0.34s steps(2, end) infinite; }
-        @keyframes meteor-flare { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        /* Ionized train left behind after the head has moved on. */
+        .shooting-star--fireball::before {
+            width: 4px;
+            height: 4px;
+            box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.55), 0 0 14px 4px var(--sglow, rgba(150, 190, 240, 0.18));
+        }
+        /* Ionized train left behind after the head has moved on — held at 0.12 alpha so
+           it reads as a memory of the path, not a second streak. */
         .meteor-train {
             position: absolute;
             height: 1.5px;
             border-radius: 1.5px;
             pointer-events: none;
-            background: linear-gradient(90deg, transparent, var(--train, rgba(170, 210, 250, 0.22)));
+            background: linear-gradient(90deg, transparent, var(--train, rgba(170, 210, 250, 0.12)));
             animation: train-glow 4.5s ease-out forwards;
         }
         @keyframes train-glow { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
@@ -317,16 +297,16 @@
             width: 2px;
             height: 2px;
             border-radius: 50%;
-            background: rgba(232, 242, 255, 0.85);
-            box-shadow: 0 0 5px 1px rgba(232, 242, 255, 0.25);
+            background: rgba(232, 242, 255, 0.70);
+            box-shadow: 0 0 4px 1px rgba(232, 242, 255, 0.14);
             animation: satellite-pass var(--sd, 34s) linear forwards;
         }
         @keyframes satellite-pass {
             0%   { opacity: 0; transform: rotate(var(--rot, 0deg)) translateX(0); }
-            12%  { opacity: 0.45; }
-            44%  { opacity: 0.85; }
-            57%  { opacity: 0.42; }
-            72%  { opacity: 0.7; }
+            12%  { opacity: 0.35; }
+            44%  { opacity: 0.60; }
+            57%  { opacity: 0.32; }
+            72%  { opacity: 0.50; }
             100% { opacity: 0; transform: rotate(var(--rot, 0deg)) translateX(var(--run, 46vw)); }
         }
 
@@ -334,21 +314,21 @@
         .container {
             position: relative;
             z-index: 1;
-            max-width: 420px;
+            max-width: 440px;
             width: 100%;
             margin: auto;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 32%), var(--glass-bg);
-            -webkit-backdrop-filter: blur(20px);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 40px 30px 34px;
-            border: 1px solid transparent;
-            background:
-                linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 32%) padding-box,
-                var(--glass-bg) padding-box,
-                linear-gradient(135deg, rgba(0, 243, 255, 0.45), rgba(255, 0, 127, 0.35)) border-box;
-            box-shadow: 0 0 40px rgba(0, 243, 255, 0.18), inset 0 0 20px rgba(0, 243, 255, 0.08);
-            animation: fadeUp 0.6s ease-out backwards;
+            background: var(--panel);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            /* Bottom padding slightly larger than the top: equal padding on a content
+               block always reads as top-heavy. */
+            padding: calc(var(--space) * 4) calc(var(--space) * 4) calc(var(--space) * 4.5);
+            border: 1px solid var(--line);
+            /* Two shadows: a tight contact shadow that anchors the card, and a wide
+               ambient one that lifts it off the sky. */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.30), 0 18px 40px rgba(0, 0, 0, 0.40);
+            animation: fadeUp 0.5s ease-out backwards;
         }
 
         /* ---------- Profile ---------- */
@@ -357,231 +337,159 @@
         }
         .profile-frame {
             position: relative;
-            width: 152px;
-            height: 152px;
-            margin: 0 auto 24px;
+            width: 124px;
+            height: 124px;
+            margin: 0 auto calc(var(--space) * 3);
             border-radius: 50%;
-            animation: pulseGlow 3s infinite alternate ease-in-out;
-        }
-        .profile-ring {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-magenta), var(--neon-purple), var(--neon-blue), var(--neon-cyan));
-            animation: spin 10s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            border: 1px solid var(--line-strong);
+            background: #0d1521;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
         }
         .profile-pic {
             position: absolute;
-            inset: 5px;
-            width: calc(100% - 10px);
-            height: calc(100% - 10px);
+            inset: 4px;
+            width: calc(100% - 8px);
+            height: calc(100% - 8px);
             border-radius: 50%;
             object-fit: cover;
-            background: #0d1526;
-            box-shadow: inset 0 0 18px rgba(0, 243, 255, 0.25);
-        }
-        @keyframes pulseGlow {
-            0%   { box-shadow: 0 0 20px rgba(0, 243, 255, 0.45); }
-            100% { box-shadow: 0 0 42px rgba(0, 243, 255, 0.75), 0 0 64px rgba(255, 0, 127, 0.28); }
+            background: #0d1521;
         }
 
         h1 {
-            font-family: 'Orbitron', 'Rajdhani', sans-serif;
-            font-size: 2.4rem;
-            font-weight: 900;
-            letter-spacing: 0.04em;
-            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-magenta));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: transparent;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 0 12px rgba(0, 243, 255, 0.35));
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-size: 1.7rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: var(--line-height-tight);
+            text-wrap: balance;
+            color: var(--text);
+            margin-bottom: calc(var(--space) * 0.75);
         }
         .subtitle {
-            font-size: 1.15rem;
-            font-weight: 600;
-            letter-spacing: 0.03em;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.01em;
             color: var(--text-dim);
         }
 
-        .rainbow-line {
-            height: 3px;
-            width: 160px;
-            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta), var(--neon-purple), var(--neon-blue));
-            margin: 18px auto 0;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-        .rainbow-line::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
-            animation: shimmer 2.4s infinite;
-        }
-        @keyframes shimmer {
-            0%   { left: -100%; }
-            100% { left: 100%; }
+        /* Quiet hairline instead of a rainbow rule: structure without shouting. */
+        .rule {
+            height: 1px;
+            width: 56px;
+            background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+            margin: calc(var(--space) * 2.25) auto 0;
         }
 
         /* ---------- Links ---------- */
         .links {
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            margin-top: 36px;
+            gap: calc(var(--space) * 1.5);
+            margin-top: calc(var(--space) * 3.5);
         }
         .link-card {
-            --accent: var(--neon-cyan);
-            --accent-soft: rgba(0, 243, 255, 0.45);
-            --accent-glow: rgba(0, 243, 255, 0.28);
-            --accent-tint: rgba(0, 243, 255, 0.10);
             display: grid;
-            grid-template-columns: 1.8rem 1fr 1.8rem;
+            grid-template-columns: 20px 1fr 16px;
             align-items: center;
-            justify-items: center;
-            gap: 14px;
-            padding: 14px 22px;
-            background:
-                linear-gradient(135deg, var(--accent-tint), transparent 55%),
-                rgba(10, 20, 40, 0.62);
-            border: 1px solid var(--accent-soft);
-            border-radius: 12px;
+            gap: calc(var(--space) * 1.5);
+            padding: calc(var(--space) * 1.625) calc(var(--space) * 2);
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
             text-decoration: none;
-            color: #fff;
-            position: relative;
-            overflow: hidden;
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-            box-shadow: inset 0 0 14px var(--accent-tint), 0 0 12px var(--accent-glow);
-            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-            animation: fadeUp 0.5s ease-out backwards;
+            color: var(--text);
+            transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+            animation: fadeUp 0.45s ease-out backwards;
         }
-        .links .link-card:nth-child(1) { animation-delay: 0.12s; }
-        .links .link-card:nth-child(2) { animation-delay: 0.20s; }
-        .links .link-card:nth-child(3) { animation-delay: 0.28s; }
-        .links .link-card:nth-child(4) { animation-delay: 0.36s; }
-        .links .link-card:nth-child(5) { animation-delay: 0.44s; }
+        .links .link-card:nth-child(1) { animation-delay: 0.06s; }
+        .links .link-card:nth-child(2) { animation-delay: 0.10s; }
+        .links .link-card:nth-child(3) { animation-delay: 0.14s; }
+        .links .link-card:nth-child(4) { animation-delay: 0.18s; }
+        .links .link-card:nth-child(5) { animation-delay: 0.22s; }
 
-        .link-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-            transition: left 0.55s ease;
-        }
-        .link-card:hover::before,
-        .link-card:focus-visible::before {
-            left: 100%;
-        }
         .link-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--accent);
-            background:
-                linear-gradient(135deg, var(--accent-glow), transparent 60%),
-                rgba(14, 26, 52, 0.78);
-            box-shadow: 0 10px 24px var(--accent-glow), 0 0 0 1px var(--accent-soft), inset 0 0 18px var(--accent-tint);
+            transform: translateY(-1px);
+            background: var(--surface-hover);
+            border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
         }
         .link-card:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 3px;
+            outline: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
+            outline-offset: 2px;
+        }
+        /* Pressed state: the lift comes back down so the row feels touched, not
+           just hovered. */
+        .link-card:active {
+            transform: translateY(0);
+            background: var(--surface-hover);
+            border-color: color-mix(in srgb, var(--accent) 55%, transparent);
         }
 
         .link-card .icon {
-            font-size: 1.45rem;
-            width: 1.8rem;
-            height: 1.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent);
-            filter: drop-shadow(0 0 6px var(--accent-glow));
-            transition: transform 0.25s ease;
-        }
-        .link-card .icon-svg {
-            width: 1.65rem;
-            height: 1.65rem;
+            width: 20px;
+            height: 20px;
             fill: var(--accent);
+            transition: transform 0.18s ease;
         }
         .link-card:hover .icon {
-            transform: scale(1.12);
+            transform: scale(1.06);
         }
         .link-card .label {
-            font-size: 1.12rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            line-height: 1.35;
         }
-        /* Per-platform accent colors */
-        /* Per-platform accents — brand-faithful, balanced cool ramp + one warm counterpoint (Ko-fi) */
-        .discord     { --accent: #5865F2; --accent-soft: rgba(88, 101, 242, 0.5);  --accent-glow: rgba(88, 101, 242, 0.32); --accent-tint: rgba(88, 101, 242, 0.12); }
-        .twitter     { --accent: #1DA1F2; --accent-soft: rgba(29, 161, 242, 0.5);  --accent-glow: rgba(29, 161, 242, 0.32); --accent-tint: rgba(29, 161, 242, 0.12); }
-        .bluesky     { --accent: #1185FE; --accent-soft: rgba(17, 133, 254, 0.5);  --accent-glow: rgba(17, 133, 254, 0.32); --accent-tint: rgba(17, 133, 254, 0.12); }
-        .telegram    { --accent: #2AABEE; --accent-soft: rgba(42, 171, 238, 0.5);  --accent-glow: rgba(42, 171, 238, 0.32); --accent-tint: rgba(42, 171, 238, 0.12); }
-        .kofi        { --accent: #FF6B5B; --accent-soft: rgba(255, 107, 91, 0.5);  --accent-glow: rgba(255, 107, 91, 0.32); --accent-tint: rgba(255, 107, 91, 0.12); }
+        /* Trailing arrow: fills the right column so the row reads as a list, not a
+           centred badge, and gives the hover state somewhere to land. */
+        .link-card .arrow {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: var(--text-faint);
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.18s ease, transform 0.18s ease;
+        }
+        .link-card:hover .arrow {
+            stroke: var(--accent);
+            transform: translateX(2px);
+        }
+
+        /* Per-platform accents — brand-faithful, used only on the icon and the hover
+           border. Cards sit on a neutral line at rest so the list reads as one system. */
+        .discord     { --accent: #5865F2; }
+        .twitter     { --accent: #1DA1F2; }
+        .bluesky     { --accent: #1185FE; }
+        .telegram    { --accent: #2AABEE; }
+        .kofi        { --accent: #FF6B5B; }
 
         /* ---------- Footer ---------- */
         footer {
             position: relative;
             z-index: 1;
-            margin-top: 14px;
-            font-size: 0.82rem;
-            font-weight: 500;
-            letter-spacing: 0.04em;
-            color: rgba(255, 255, 255, 0.45);
+            margin-top: calc(var(--space) * 2.5);
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            color: var(--text-faint);
             text-align: center;
-        }
-
-        /* ---------- Container glow ---------- */
-        .container::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 22px;
-            box-shadow: 0 0 50px rgba(0, 243, 255, 0.22), 0 0 90px rgba(255, 0, 127, 0.08);
-            animation: breathe 8s ease-in-out infinite alternate;
-            pointer-events: none;
-            z-index: -1;
-        }
-        @keyframes breathe {
-            from { opacity: 0.55; }
-            to   { opacity: 1; }
-        }
-
-        /* ---------- Glass grain ---------- */
-        .container::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E") repeat;
-            pointer-events: none;
-            border-radius: inherit;
         }
 
         /* ---------- Animations ---------- */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
+            from { opacity: 0; transform: translateY(12px); }
             to   { opacity: 1; transform: translateY(0); }
         }
 
         /* ---------- Responsive ---------- */
         @media (max-width: 480px) {
-            body { padding: 16px 12px; }
-            .container { padding: 32px 20px 28px; }
-            h1 { font-size: 2rem; }
-            .link-card { padding: 12px 18px; }
-            .link-card .label { font-size: 1.05rem; }
+            body { padding: calc(var(--space) * 2) calc(var(--space) * 1.5); }
+            .container { padding: calc(var(--space) * 3) calc(var(--space) * 3) calc(var(--space) * 3.5); }
+            h1 { font-size: 1.5rem; }
+            .link-card { padding: calc(var(--space) * 1.5) calc(var(--space) * 1.75); }
+            .profile-frame { width: 112px; height: 112px; }
         }
 
         /* ---------- Reduced motion ---------- */
@@ -594,21 +502,49 @@
             .shooting-stars { display: none; }
             /* Stars: stop drifting/twinkling, hold a steady readable brightness */
             .stars, .star, .star-layer { animation: none !important; }
-            .star--far  { opacity: 0.35; }
-            .star--mid  { opacity: 0.6; }
-            .star--near { opacity: 0.9; }
-            .star--hero { opacity: 0.95; }
-            .star--steady { opacity: 0.55; }
-            .star--planet { opacity: 0.85; }
-            .star--hero::before, .star--hero::after { opacity: 0.5; }
+            .star--far  { opacity: 0.28; }
+            .star--mid  { opacity: 0.45; }
+            .star--near { opacity: 0.70; }
+            .star--hero { opacity: 0.80; }
+            .star--steady { opacity: 0.40; }
+            .star--planet { opacity: 0.65; }
+        }
+
+        /* ---------- Forced colors (Windows high contrast) ---------- */
+        @media (forced-colors: active) {
+            /* The sky is decoration: it keeps its own colours while the interface
+               adopts the system palette. */
+            .starfield, .stars, .shooting-stars { forced-color-adjust: none; }
+            .container, .link-card, .profile-frame { border-color: CanvasText; }
+            .link-card:focus-visible { outline-color: Highlight; }
+            .link-card:hover, .link-card:active { border-color: Highlight; }
+            .link-card .icon { fill: CanvasText; }
+            .link-card .arrow { stroke: CanvasText; }
+            .rule { background: CanvasText; }
+            footer { color: CanvasText; }
+        }
+
+        /* ---------- Higher preference contrast ---------- */
+        @media (prefers-contrast: more) {
+            :root {
+                --panel: rgba(11, 16, 24, 0.92);
+                --surface: rgba(255, 255, 255, 0.05);
+                --line: rgba(226, 234, 245, 0.24);
+                --line-strong: rgba(226, 234, 245, 0.38);
+                --text-dim: rgba(226, 234, 245, 0.80);
+                --text-faint: rgba(226, 234, 245, 0.60);
+            }
+            /* Blur and soft shadows cost legibility here. */
+            .container, .profile-frame { backdrop-filter: none; box-shadow: none; }
+            /* The sky should not compete with the text. */
+            .starfield, .stars { opacity: 0.45; }
+            .stars::before, .stars::after { background-image: none; }
         }
     </style>
 </head>
 <body>
     <!-- Background layers -->
     <div class="starfield" aria-hidden="true"></div>
-    <div class="aurora aurora--cyan" aria-hidden="true"></div>
-    <div class="aurora aurora--magenta" aria-hidden="true"></div>
     <div class="stars" id="stars" aria-hidden="true"></div>
     <div class="shooting-stars" id="shootingStars" aria-hidden="true"></div>
 
@@ -616,36 +552,40 @@
     <main class="container">
         <header class="profile">
             <div class="profile-frame">
-                <div class="profile-ring" aria-hidden="true"></div>
-                <img src="avatar.webp" alt="Xion Bunny avatar" class="profile-pic" width="142" height="142" fetchpriority="high">
+                    <img src="avatar.webp" alt="Xion Bunny avatar" class="profile-pic" width="142" height="142" fetchpriority="high">
             </div>
             <h1>Xion Bunny</h1>
             <p class="subtitle">Cuddly Sci-Fi Enthusiast &amp; Digital Explorer</p>
-            <div class="rainbow-line" aria-hidden="true"></div>
+            <div class="rule" aria-hidden="true"></div>
         </header>
 
         <section class="links" aria-label="Social links">
             <a class="link-card discord" href="https://discord.com/users/641416678122586143" target="_blank" rel="noopener">
                 <svg class="icon icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
                 <span class="label">Discord (XionBunny)</span>
+                <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg>
             </a>
             <a class="link-card twitter" href="https://twitter.com/xionbunny" target="_blank" rel="noopener">
                 <svg class="icon icon-svg" viewBox="-2.8 -2.8 29.6 29.6" aria-hidden="true" focusable="false"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg>
                 <span class="label">Twitter (@xionbunny)</span>
+                <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg>
             </a>
             <a class="link-card bluesky" href="https://bsky.app/profile/xionbunny.bsky.social" target="_blank" rel="noopener">
                 <svg class="icon icon-svg" viewBox="0 0 600 530" aria-hidden="true" focusable="false">
                     <path d="m135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.3797-3.6904-10.832-3.7077-7.8964-0.0174-2.9357-1.1937 0.51669-3.7077 7.8964-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.4491-163.25-81.433-5.9562-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"/>
                 </svg>
                 <span class="label">BlueSky (xionbunny)</span>
+                <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg>
             </a>
             <a class="link-card telegram" href="https://t.me/xionbunny" target="_blank" rel="noopener">
                 <svg class="icon icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
                 <span class="label">Telegram (xionbunny)</span>
+                <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg>
             </a>
             <a class="link-card kofi" href="https://ko-fi.com/xionbunny" target="_blank" rel="noopener">
                 <svg class="icon icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M11.351 2.715c-2.7 0-4.986.025-6.83.26C2.078 3.285 0 5.154 0 8.61c0 3.506.182 6.13 1.585 8.493c1.584 2.701 4.233 4.182 7.662 4.182h.83c4.209 0 6.494-2.234 7.637-4a9.5 9.5 0 0 0 1.091-2.338C21.792 14.688 24 12.22 24 9.208v-.415c0-3.247-2.13-5.507-5.792-5.87c-1.558-.156-2.65-.208-6.857-.208m0 1.947c4.208 0 5.09.052 6.571.182c2.624.311 4.13 1.584 4.13 4v.39c0 2.156-1.792 3.844-3.87 3.844h-.935l-.156.649c-.208 1.013-.597 1.818-1.039 2.546c-.909 1.428-2.545 3.064-5.922 3.064h-.805c-2.571 0-4.831-.883-6.078-3.195c-1.09-2-1.298-4.155-1.298-7.506c0-2.181.857-3.402 3.012-3.714c1.533-.233 3.559-.26 6.39-.26m6.547 2.287c-.416 0-.65.234-.65.546v2.935c0 .311.234.545.65.545c1.324 0 2.051-.754 2.051-2s-.727-2.026-2.052-2.026m-10.39.182c-1.818 0-3.013 1.48-3.013 3.142c0 1.533.858 2.857 1.949 3.897c.727.701 1.87 1.429 2.649 1.896a1.47 1.47 0 0 0 1.507 0c.78-.467 1.922-1.195 2.623-1.896c1.117-1.039 1.974-2.364 1.974-3.897c0-1.662-1.247-3.142-3.039-3.142c-1.065 0-1.792.545-2.338 1.298c-.493-.753-1.246-1.298-2.312-1.298"/></svg>
                 <span class="label">Ko-fi (xionbunny)</span>
+                <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg>
             </a>
         </section>
     </main>
@@ -671,11 +611,11 @@
                     };
                 }
 
-                var COUNT = Math.max(60, Math.min(130, Math.round((window.innerWidth * window.innerHeight) / 9500)));
+                var COUNT = Math.max(45, Math.min(85, Math.round((window.innerWidth * window.innerHeight) / 11000)));
                 var rnd = mulberry32(20260817);                 // same sky on every visit
                 var bell = function () { return (rnd() + rnd() + rnd() - 1.5) / 1.5; }; // ~gaussian, -1..1
                 var clampPct = function (v, lo, hi) { return Math.max(lo, Math.min(hi, v)); };
-                var tints = [[255, 255, 255], [255, 255, 255], [255, 255, 255], [219, 231, 255], [207, 232, 255], [232, 216, 255], [191, 233, 255]];
+                var tints = [[255, 255, 255], [255, 255, 255], [240, 246, 255], [226, 236, 252], [212, 224, 244], [200, 214, 238], [236, 232, 224]];
                 // Interstellar extinction: the faintest magnitudes never reach full brightness,
                 // so --c carries its own alpha and the twinkle keyframes multiply against it.
                 var tint = function (a) {
@@ -683,9 +623,9 @@
                     return 'rgba(' + t[0] + ',' + t[1] + ',' + t[2] + ',' + a.toFixed(2) + ')';
                 };
                 var tiers = [
-                    { name: 'far',  cut: 0.55, min: 1.0, max: 1.4, dMin: 5.0, dMax: 11.0, aMin: 0.30, aMax: 0.50 },
-                    { name: 'mid',  cut: 0.90, min: 1.4, max: 2.2, dMin: 3.5, dMax: 8.0, aMin: 0.45, aMax: 0.65 },
-                    { name: 'near', cut: 1.00, min: 2.2, max: 3.4, dMin: 2.5, dMax: 6.0, aMin: 0.60, aMax: 0.85 }
+                    { name: 'far',  cut: 0.55, min: 1.0, max: 1.4, dMin: 7.0, dMax: 14.0, aMin: 0.18, aMax: 0.30 },
+                    { name: 'mid',  cut: 0.90, min: 1.2, max: 2.0, dMin: 5.0, dMax: 11.0, aMin: 0.30, aMax: 0.45 },
+                    { name: 'near', cut: 1.00, min: 1.8, max: 2.8, dMin: 4.0, dMax: 9.0, aMin: 0.42, aMax: 0.62 }
                 ];
 
                 // Patchy density: a few dense cores with deliberate empty sky between them.
@@ -708,17 +648,18 @@
                     frag.appendChild(layer);
                 }
 
-                // One bright focal star at the core of selected clusters.
+                // One bright focal star at the core of selected clusters, capped at four:
+                // the sky needs a few accents, not a field of them.
                 var placed = 0;
-                for (var h = 0; h < clusters.length && placed < COUNT; h++) {
+                for (var h = 0; h < clusters.length && placed < 4; h++) {
                     if (!clusters[h].hero) continue;
                     var hero = document.createElement('div');
                     hero.className = 'star star--near star--hero';
                     hero.style.cssText = 'left:' + clusters[h].x.toFixed(2) + '%;' +
                         'top:' + clusters[h].y.toFixed(2) + '%;' +
-                        '--s:' + (3.6 + rnd() * 1.6).toFixed(1) + 'px;--c:' + tint(0.85) + ';' +
-                        '--d:' + (3 + rnd() * 3).toFixed(1) + 's;--dl:' + (rnd() * 8).toFixed(1) + 's;' +
-                        '--g:' + (14 + rnd() * 8).toFixed(0) + 'px;--spike:' + (12 + rnd() * 10).toFixed(0) + 'px;' +
+                        '--s:' + (2.6 + rnd() * 1.2).toFixed(1) + 'px;--c:' + tint(0.72) + ';' +
+                        '--d:' + (4 + rnd() * 4).toFixed(1) + 's;--dl:' + (rnd() * 8).toFixed(1) + 's;' +
+                        '--g:' + (10 + rnd() * 6).toFixed(0) + 'px;' +
                         '--sd:' + (6 + rnd() * 5).toFixed(1) + 's;';
                     layers.near.appendChild(hero);
                     placed++;
@@ -745,11 +686,11 @@
                     // faster than large resolved disks.
                     var dur = (tier.dMin + rnd() * (tier.dMax - tier.dMin)) * (1.5 - size / tier.max * 0.5);
                     // Resolved disks and distant point sources do not scintillate.
-                    var steady = rnd() < (size > 2.6 ? 0.35 : 0.12);
+                    var steady = rnd() < (size > 2.4 ? 0.30 : 0.10);
                     var cssText = 'left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;' +
                         '--s:' + size.toFixed(1) + 'px;--c:' + tint(tier.aMin + rnd() * (tier.aMax - tier.aMin)) + ';' +
                         '--d:' + dur.toFixed(1) + 's;--dl:' + (rnd() * 8).toFixed(1) + 's;';
-                    if (tier.name === 'near') cssText += '--g:' + (6 + rnd() * 8).toFixed(0) + 'px;';
+                    if (tier.name === 'near') cssText += '--g:' + (5 + rnd() * 6).toFixed(0) + 'px;';
                     var star = document.createElement('div');
                     star.className = 'star star--' + tier.name + (steady ? ' star--steady' : '');
                     star.style.cssText = cssText;
@@ -757,13 +698,13 @@
                 }
 
                 // Planets: warm, non-twinkling disks sitting low in the sky.
-                var planets = ['rgba(242, 214, 180, 0.85)', 'rgba(206, 222, 248, 0.80)'];
+                var planets = ['rgba(238, 214, 186, 0.70)', 'rgba(206, 222, 248, 0.62)'];
                 for (var p = 0; p < 2; p++) {
                     var planet = document.createElement('div');
                     planet.className = 'star star--near star--planet';
                     planet.style.cssText = 'left:' + (12 + rnd() * 76).toFixed(2) + '%;top:' + (62 + rnd() * 22).toFixed(2) + '%;' +
-                        '--s:' + (3.2 + rnd() * 1.4).toFixed(1) + 'px;--c:' + planets[p] + ';' +
-                        '--g:' + (7 + rnd() * 4).toFixed(0) + 'px;';
+                        '--s:' + (2.8 + rnd() * 1.2).toFixed(1) + 'px;--c:' + planets[p] + ';' +
+                        '--g:' + (5 + rnd() * 3).toFixed(0) + 'px;';
                     layers.near.appendChild(planet);
                 }
 
@@ -776,7 +717,7 @@
                 var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                 function spawnShootingStar() {
                     var el = document.createElement('div');
-                    var fireball = Math.random() < 0.18;
+                    var fireball = Math.random() < 0.12;
                     el.className = 'shooting-star' + (fireball ? ' shooting-star--fireball' : '');
 
                     // Start position — biased toward upper portion of viewport
@@ -792,16 +733,16 @@
                     var dur = 650 + Math.random() * 1300; // 0.65–1.95s
 
                     // Tail length & thickness
-                    var tailLen = 70 + Math.random() * 100; // 70–170px
-                    var thickness = Math.random() > 0.6 ? 2 : 1.5;
+                    var tailLen = 55 + Math.random() * 70; // 55–125px
+                    var thickness = 1.2;
 
                     // Travel distance (px) — enough to cross a good chunk of viewport
                     var vw = window.innerWidth;
                     var travelPx = (30 + Math.random() * 35) * (vw / 100);
 
                     // Brightness variation
-                    var alpha = 0.65 + Math.random() * 0.3;
-                    var glowColors = ['rgba(0,243,255,0.22)', 'rgba(180,0,255,0.20)', 'rgba(255,255,255,0.25)'];
+                    var alpha = 0.45 + Math.random() * 0.20;
+                    var glowColors = ['rgba(150,190,240,0.18)', 'rgba(180,210,250,0.16)', 'rgba(210,225,250,0.14)'];
                     var glow = glowColors[(Math.random() * glowColors.length) | 0];
 
                     el.style.cssText =
@@ -844,12 +785,12 @@
 
                 // Satellites: slow, steady, straight-line movers — a different rhythm from meteors.
                 function spawnSatellite() {
-                    if (starContainer.querySelectorAll('.satellite').length >= 3) return;
+                    if (starContainer.querySelectorAll('.satellite').length >= 1) return;
                     var el = document.createElement('div');
                     el.className = 'satellite';
                     var angleDeg = 8 + Math.random() * 40;
                     var angle = Math.random() > 0.25 ? angleDeg : (180 - angleDeg);
-                    var dur = 22 + Math.random() * 26;
+                    var dur = 30 + Math.random() * 22;
                     el.style.cssText = 'top:' + (4 + Math.random() * 56) + 'vh;left:' + (3 + Math.random() * 66) + 'vw;' +
                         '--run:' + (35 + Math.random() * 45) + 'vw;--rot:' + angle + 'deg;--sd:' + dur.toFixed(1) + 's;';
                     starContainer.appendChild(el);
@@ -864,16 +805,16 @@
                     }
                     spawnShootingStar();
                     // Occasional meteor shower: a quick follow-up pair
-                    if (Math.random() < 0.15) {
-                        setTimeout(function () { spawnShootingStar(); }, 250 + Math.random() * 500);
+                    if (Math.random() < 0.12) {
+                        setTimeout(function () { spawnShootingStar(); }, 400 + Math.random() * 700);
                     }
-                    setTimeout(spawnLoop, 3000 + Math.random() * 9000);
+                    setTimeout(spawnLoop, 6000 + Math.random() * 12000);
                 }
 
                 function satelliteLoop() {
                     if (document.hidden) { setTimeout(satelliteLoop, 8000); return; }
                     spawnSatellite();
-                    setTimeout(satelliteLoop, 14000 + Math.random() * 26000);
+                    setTimeout(satelliteLoop, 24000 + Math.random() * 36000);
                 }
 
                 if (!reduceMotion) { spawnLoop(); satelliteLoop(); }
@@ -886,8 +827,8 @@
                     avatar.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(
                         "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'>" +
                         "<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>" +
-                        "<stop offset='0' stop-color='#00f3ff'/>" +
-                        "<stop offset='1' stop-color='#ff007f'/>" +
+                        "<stop offset='0' stop-color='#2c4a66'/>" +
+                        "<stop offset='1' stop-color='#6aa9d8'/>" +
                         "</linearGradient></defs>" +
                         "<rect width='140' height='140' fill='url(#g)'/>" +
                         "<text x='70' y='84' font-size='60' text-anchor='middle'>\uD83D\uDC30</text>" +

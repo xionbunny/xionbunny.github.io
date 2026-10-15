@@ -5,3 +5,6 @@ test.html
 index.github-backup.html
 *.github-backup.html
 .scratch/
+
+# local audit scripts
+.crawl-check.js
