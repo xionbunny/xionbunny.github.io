@@ -70,7 +70,12 @@
             position: fixed;
             inset: 0;
             z-index: -4;
-            background: radial-gradient(ellipse at center, #0d1b2a 0%, #000000 100%);
+            background:
+                /* Horizon / atmosphere glow */
+                radial-gradient(140% 45% at 50% 100%, rgba(0, 243, 255, 0.10), transparent 68%),
+                radial-gradient(120% 80% at 50% 0%, rgba(0, 243, 255, 0.06), transparent 60%),
+                radial-gradient(110% 90% at 80% 100%, rgba(180, 0, 255, 0.05), transparent 62%),
+                radial-gradient(ellipse at center, #101d2e 0%, #070a16 55%, #000000 100%);
             pointer-events: none;
         }
 
@@ -103,36 +108,161 @@
 
         .stars {
             position: fixed;
-            inset: 0;
+            inset: -6%;
             z-index: -2;
             pointer-events: none;
+            animation: starfield-drift 200s linear infinite alternate;
+            will-change: transform;
+            /* Fade the field toward the horizon: dense at the zenith, thin at the bottom. */
+            -webkit-mask-image: radial-gradient(120% 110% at 50% 42%, #000 38%, rgba(0, 0, 0, 0.6) 72%, rgba(0, 0, 0, 0.15) 100%);
+            mask-image: radial-gradient(120% 110% at 50% 42%, #000 38%, rgba(0, 0, 0, 0.6) 72%, rgba(0, 0, 0, 0.15) 100%);
         }
+        /* Static density layer (no DOM cost, works with JS disabled). */
+        .stars::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            /* One star per gradient, each on its own coprime tile. Sharing tile
+               sizes made the dots line up into a visible lattice, which read as
+               graph paper rather than sky. */
+            background-image:
+                radial-gradient(1px 1px at 25px 35px, rgba(255, 255, 255, 0.5), transparent 50%),
+                radial-gradient(1px 1px at 120px 90px, rgba(205, 222, 255, 0.42), transparent 50%),
+                radial-gradient(1.5px 1.5px at 200px 150px, rgba(255, 255, 255, 0.55), transparent 50%),
+                radial-gradient(1px 1px at 300px 60px, rgba(190, 215, 255, 0.36), transparent 50%),
+                radial-gradient(1px 1px at 160px 180px, rgba(255, 255, 255, 0.45), transparent 50%),
+                radial-gradient(1.2px 1.2px at 90px 210px, rgba(0, 243, 255, 0.3), transparent 50%),
+                radial-gradient(1.5px 1.5px at 70px 120px, rgba(255, 255, 255, 0.4), transparent 50%),
+                radial-gradient(1.5px 1.5px at 240px 90px, rgba(205, 222, 255, 0.38), transparent 50%),
+                radial-gradient(2px 2px at 130px 60px, rgba(255, 255, 255, 0.42), transparent 50%),
+                radial-gradient(2px 2px at 210px 140px, rgba(190, 215, 255, 0.34), transparent 50%),
+                radial-gradient(1px 1px at 80px 190px, rgba(255, 255, 255, 0.4), transparent 50%),
+                radial-gradient(1.2px 1.2px at 190px 40px, rgba(0, 243, 255, 0.26), transparent 50%),
+                /* Faintest magnitude: sub-pixel dust, most visible on hi-DPI screens. */
+                radial-gradient(0.8px 0.8px at 47px 131px, rgba(210, 224, 248, 0.30), transparent 55%),
+                radial-gradient(0.8px 0.8px at 151px 214px, rgba(196, 212, 240, 0.26), transparent 55%),
+                radial-gradient(0.8px 0.8px at 268px 178px, rgba(224, 236, 255, 0.24), transparent 55%),
+                radial-gradient(1px 1px at 104px 268px, rgba(214, 228, 252, 0.28), transparent 55%),
+                radial-gradient(1px 1px at 236px 232px, rgba(204, 219, 246, 0.22), transparent 55%);
+            background-size: 341px 259px, 311px 229px, 271px 211px, 313px 173px, 199px 191px, 131px 229px, 173px 151px, 251px 199px, 151px 131px, 229px 191px, 113px 199px, 197px 113px, 139px 167px, 167px 137px, 191px 179px, 179px 149px, 149px 127px;
+            background-repeat: repeat;
+        }
+        /* Milky Way band: soft diagonal haze carrying unresolved star dust, broken by a
+           dark dust lane (the Great Rift) where opaque clouds hide what is behind them. */
+        .stars::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(38% 7% at 58% 44%, rgba(4, 5, 12, 0.55), transparent 70%),
+                radial-gradient(24% 4% at 38% 52%, rgba(4, 5, 12, 0.38), transparent 72%),
+                linear-gradient(115deg, transparent 32%, rgba(176, 201, 245, 0.075) 45%, rgba(212, 229, 255, 0.055) 55%, transparent 70%),
+                radial-gradient(1px 1px at 14px 22px, rgba(228, 238, 255, 0.34), transparent 60%),
+                radial-gradient(1px 1px at 61px 47px, rgba(210, 224, 250, 0.28), transparent 60%),
+                radial-gradient(1.2px 1.2px at 97px 71px, rgba(236, 244, 255, 0.30), transparent 60%),
+                radial-gradient(1px 1px at 43px 89px, rgba(198, 214, 244, 0.24), transparent 60%),
+                radial-gradient(0.8px 0.8px at 78px 13px, rgba(224, 236, 252, 0.22), transparent 60%);
+            background-size: auto, auto, auto, 107px 97px, 89px 73px, 113px 83px, 71px 101px, 61px 53px;
+            /* Keep the dust inside the band, thickest toward the galactic core. */
+            -webkit-mask-image: linear-gradient(115deg, transparent 30%, rgba(0, 0, 0, 0.35) 42%, #000 52%, rgba(0, 0, 0, 0.45) 62%, transparent 72%);
+            mask-image: linear-gradient(115deg, transparent 30%, rgba(0, 0, 0, 0.35) 42%, #000 52%, rgba(0, 0, 0, 0.45) 62%, transparent 72%);
+        }
+        /* Depth layers: each tier drifts at its own rate for parallax. */
+        .star-layer {
+            position: absolute;
+            inset: 0;
+            contain: layout style;
+        }
+        .star-layer--far  { animation: drift-far 240s linear infinite alternate; }
+        .star-layer--mid {
+            animation: drift-mid 170s linear infinite alternate;
+        }
+        .star-layer--near {
+            animation: drift-near 120s linear infinite alternate;
+        }
+        /* Twinkling stars: three depth tiers, per-star vars for size/colour/timing. */
         .star {
             position: absolute;
-            background: #fff;
+            width: var(--s, 1.5px);
+            height: var(--s, 1.5px);
+            background: var(--c, #fff);
             border-radius: 50%;
-            animation: twinkle 3s infinite alternate ease-in-out;
+            animation: twinkle-mid var(--d, 4s) infinite alternate ease-in-out;
+            animation-delay: var(--dl, 0s);
         }
-        .star--bright {
-            box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.8);
+        .star--far  { animation-name: twinkle-far; }
+        .star--mid  { animation-name: twinkle-mid; }
+        .star--near {
+            animation-name: twinkle-near;
+            /* Glow follows the star's own tint (--c); --glow is an optional override */
+            box-shadow: 0 0 var(--g, 8px) 1px var(--glow, color-mix(in srgb, var(--c, #fff) 55%, transparent));
         }
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.25; }
-            50%      { opacity: 1; }
+        /* Resolved disks and distant point sources do not scintillate: they hold a
+           steady brightness, which is what makes them read differently from the rest. */
+        .star--steady { animation: none; }
+        .star--planet {
+            animation: none;
+            box-shadow: 0 0 7px 1px var(--glow, color-mix(in srgb, var(--c, #fff) 45%, transparent));
         }
-
-        .grid-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            pointer-events: none;
-            background-image:
-                linear-gradient(rgba(0, 243, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.04) 1px, transparent 1px);
-            background-size: 50px 50px;
-            -webkit-mask-image: radial-gradient(ellipse at center, #000 0%, transparent 78%);
-            mask-image: radial-gradient(ellipse at center, #000 0%, transparent 78%);
+        /* Hero stars: the sky's focal points — breathing glow + diffraction spikes. */
+        .star--hero {
+            animation-name: twinkle-hero;
+            box-shadow: 0 0 var(--g, 14px) 2px var(--glow, color-mix(in srgb, var(--c, #fff) 60%, transparent));
         }
+        .star--hero::before,
+        .star--hero::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: var(--spike, 16px);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+            transform: translate(-50%, -50%);
+            opacity: 0.55;
+            animation: spike-shimmer var(--sd, 7s) ease-in-out infinite alternate;
+            animation-delay: var(--dl, 0s);
+        }
+        .star--hero::after { transform: translate(-50%, -50%) rotate(90deg); }
+        /* Scintillation depth follows apparent size: the smallest point sources flutter
+           hardest, large resolved disks breathe slowly. Uneven stops keep it from feeling
+           like a metronome. */
+        @keyframes twinkle-far  {
+            0%, 100% { opacity: 0.10; }
+            18% { opacity: 0.44; }
+            31% { opacity: 0.20; }
+            48% { opacity: 0.55; }
+            66% { opacity: 0.26; }
+            82% { opacity: 0.40; }
+        }
+        @keyframes twinkle-mid  {
+            0%, 100% { opacity: 0.30; }
+            22% { opacity: 0.68; }
+            40% { opacity: 0.52; }
+            58% { opacity: 0.85; }
+            76% { opacity: 0.62; }
+        }
+        @keyframes twinkle-near {
+            0%, 100% { opacity: 0.55; transform: scale(1); }
+            25% { opacity: 0.9; transform: scale(1.08); }
+            45% { opacity: 0.72; transform: scale(1.03); }
+            62% { opacity: 1; transform: scale(1.12); }
+            80% { opacity: 0.8; transform: scale(1.05); }
+        }
+        @keyframes twinkle-hero {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            35% { opacity: 0.92; transform: scale(1.14); }
+            50% { opacity: 1; transform: scale(1.18); }
+            70% { opacity: 0.86; transform: scale(1.1); }
+        }
+        @keyframes spike-shimmer { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.7; } }
+        @keyframes starfield-drift {
+            from { transform: translate3d(0, 0, 0); }
+            to   { transform: translate3d(-2%, -1.5%, 0); }
+        }
+        @keyframes drift-far  { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-0.6%, -0.4%, 0); } }
+        @keyframes drift-mid  { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-1.1%, -0.8%, 0); } }
+        @keyframes drift-near { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-1.8%, -1.2%, 0); } }
 
         .shooting-stars {
             position: fixed;
@@ -147,6 +277,52 @@
             border-radius: 1.5px;
             pointer-events: none;
             will-change: transform, opacity;
+            transform-origin: 100% 50%;
+        }
+        /* Bright head + halo at the leading tip of the tail */
+        .shooting-star::before {
+            content: "";
+            position: absolute;
+            right: -1px;
+            top: 50%;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            transform: translate(50%, -50%);
+            background: #fff;
+            box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.6), 0 0 14px 4px var(--sglow, rgba(0, 243, 255, 0.22));
+        }
+        /* Fireball heads flare unevenly rather than burning at a constant brightness. */
+        .shooting-star--fireball::before { animation: meteor-flare 0.34s steps(2, end) infinite; }
+        @keyframes meteor-flare { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        /* Ionized train left behind after the head has moved on. */
+        .meteor-train {
+            position: absolute;
+            height: 1.5px;
+            border-radius: 1.5px;
+            pointer-events: none;
+            background: linear-gradient(90deg, transparent, var(--train, rgba(170, 210, 250, 0.22)));
+            animation: train-glow 4.5s ease-out forwards;
+        }
+        @keyframes train-glow { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+        /* Satellites: steady, non-twinkling, straight-line movers that flare briefly as they
+           cross brighter air. Distinct from meteors, which streak and burn out. */
+        .satellite {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+            background: rgba(232, 242, 255, 0.85);
+            box-shadow: 0 0 5px 1px rgba(232, 242, 255, 0.25);
+            animation: satellite-pass var(--sd, 34s) linear forwards;
+        }
+        @keyframes satellite-pass {
+            0%   { opacity: 0; transform: rotate(var(--rot, 0deg)) translateX(0); }
+            12%  { opacity: 0.45; }
+            44%  { opacity: 0.85; }
+            57%  { opacity: 0.42; }
+            72%  { opacity: 0.7; }
+            100% { opacity: 0; transform: rotate(var(--rot, 0deg)) translateX(var(--run, 46vw)); }
         }
 
         /* ---------- Main card ---------- */
@@ -404,20 +580,6 @@
             border-radius: inherit;
         }
 
-        /* ---------- Shooting star head ---------- */
-        .shooting-star::before {
-            content: '';
-            position: absolute;
-            right: -1px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: #fff;
-            box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.7);
-        }
-
         /* ---------- Animations ---------- */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(16px); }
@@ -441,6 +603,15 @@
                 transition-duration: 0.01ms !important;
             }
             .shooting-stars { display: none; }
+            /* Stars: stop drifting/twinkling, hold a steady readable brightness */
+            .stars, .star, .star-layer { animation: none !important; }
+            .star--far  { opacity: 0.35; }
+            .star--mid  { opacity: 0.6; }
+            .star--near { opacity: 0.9; }
+            .star--hero { opacity: 0.95; }
+            .star--steady { opacity: 0.55; }
+            .star--planet { opacity: 0.85; }
+            .star--hero::before, .star--hero::after { opacity: 0.5; }
         }
     </style>
 </head>
@@ -450,7 +621,6 @@
     <div class="aurora aurora--cyan" aria-hidden="true"></div>
     <div class="aurora aurora--magenta" aria-hidden="true"></div>
     <div class="stars" id="stars" aria-hidden="true"></div>
-    <div class="grid-overlay" aria-hidden="true"></div>
     <div class="shooting-stars" id="shootingStars" aria-hidden="true"></div>
 
     <!-- Main content -->
@@ -496,66 +666,130 @@
         <p>&copy; 2026 Xion Bunny &middot; All Rights Reserved</p>
     </footer>
 
-    <noscript>
-        <style>
-            /* Static star pattern fallback when JavaScript is disabled */
-            .stars {
-                background-image:
-                    radial-gradient(1px 1px at 25px 35px, rgba(255, 255, 255, 0.8), transparent 50%),
-                    radial-gradient(1px 1px at 120px 90px, rgba(255, 255, 255, 0.6), transparent 50%),
-                    radial-gradient(1.5px 1.5px at 200px 150px, rgba(255, 255, 255, 0.9), transparent 50%),
-                    radial-gradient(1px 1px at 300px 60px, rgba(255, 255, 255, 0.5), transparent 50%),
-                    radial-gradient(1px 1px at 160px 180px, rgba(255, 255, 255, 0.7), transparent 50%);
-                background-size: 350px 220px;
-                background-repeat: repeat;
-            }
-        </style>
-    </noscript>
-
     <script>
         (function () {
             'use strict';
 
-            // Generate a natural-looking starfield (varied size, speed, and delay)
+            // Starfield: clustered density, seeded (same sky every visit), drifting depth layers
             var starsContainer = document.getElementById('stars');
             if (starsContainer) {
-                var COUNT = 150;
-                var frag = document.createDocumentFragment();
-                for (var i = 0; i < COUNT; i++) {
-                    var star = document.createElement('div');
-                    star.className = 'star';
-
-                    var size = (Math.random() * 2 + 1).toFixed(1);
-                    star.style.width = size + 'px';
-                    star.style.height = size + 'px';
-                    star.style.left = (Math.random() * 100).toFixed(2) + '%';
-                    star.style.top = (Math.random() * 100).toFixed(2) + '%';
-                    star.style.animationDuration = (Math.random() * 3 + 2).toFixed(1) + 's';
-                    star.style.animationDelay = (Math.random() * 4).toFixed(1) + 's';
-
-                    // A few brighter stars with a soft glow
-                    if (Math.random() < 0.08) {
-                        star.className += ' star--bright';
-                    }
-                    frag.appendChild(star);
+                function mulberry32(seed) {
+                    var a = seed >>> 0;
+                    return function () {
+                        a = (a + 0x6D2B79F5) | 0;
+                        var t = Math.imul(a ^ (a >>> 15), 1 | a);
+                        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+                    };
                 }
+
+                var COUNT = Math.max(60, Math.min(130, Math.round((window.innerWidth * window.innerHeight) / 9500)));
+                var rnd = mulberry32(20260817);                 // same sky on every visit
+                var bell = function () { return (rnd() + rnd() + rnd() - 1.5) / 1.5; }; // ~gaussian, -1..1
+                var clampPct = function (v, lo, hi) { return Math.max(lo, Math.min(hi, v)); };
+                var tints = [[255, 255, 255], [255, 255, 255], [255, 255, 255], [219, 231, 255], [207, 232, 255], [232, 216, 255], [191, 233, 255]];
+                // Interstellar extinction: the faintest magnitudes never reach full brightness,
+                // so --c carries its own alpha and the twinkle keyframes multiply against it.
+                var tint = function (a) {
+                    var t = tints[(rnd() * tints.length) | 0];
+                    return 'rgba(' + t[0] + ',' + t[1] + ',' + t[2] + ',' + a.toFixed(2) + ')';
+                };
+                var tiers = [
+                    { name: 'far',  cut: 0.55, min: 1.0, max: 1.4, dMin: 5.0, dMax: 11.0, aMin: 0.30, aMax: 0.50 },
+                    { name: 'mid',  cut: 0.90, min: 1.4, max: 2.2, dMin: 3.5, dMax: 8.0, aMin: 0.45, aMax: 0.65 },
+                    { name: 'near', cut: 1.00, min: 2.2, max: 3.4, dMin: 2.5, dMax: 6.0, aMin: 0.60, aMax: 0.85 }
+                ];
+
+                // Patchy density: a few dense cores with deliberate empty sky between them.
+                var nClusters = 6 + Math.floor(rnd() * 5);
+                var clusters = [], totalW = 0;
+                for (var c = 0; c < nClusters; c++) {
+                    var w = 0.5 + rnd() * 1.5;
+                    totalW += w;
+                    clusters.push({
+                        x: 8 + rnd() * 84, y: 5 + rnd() * 72,
+                        r: 6 + rnd() * 14, w: w, hero: rnd() < 0.65
+                    });
+                }
+
+                var layers = {}, frag = document.createDocumentFragment();
+                for (var t = 0; t < tiers.length; t++) {
+                    var layer = document.createElement('div');
+                    layer.className = 'star-layer star-layer--' + tiers[t].name;
+                    layers[tiers[t].name] = layer;
+                    frag.appendChild(layer);
+                }
+
+                // One bright focal star at the core of selected clusters.
+                var placed = 0;
+                for (var h = 0; h < clusters.length && placed < COUNT; h++) {
+                    if (!clusters[h].hero) continue;
+                    var hero = document.createElement('div');
+                    hero.className = 'star star--near star--hero';
+                    hero.style.cssText = 'left:' + clusters[h].x.toFixed(2) + '%;' +
+                        'top:' + clusters[h].y.toFixed(2) + '%;' +
+                        '--s:' + (3.6 + rnd() * 1.6).toFixed(1) + 'px;--c:' + tint(0.85) + ';' +
+                        '--d:' + (3 + rnd() * 3).toFixed(1) + 's;--dl:' + (rnd() * 8).toFixed(1) + 's;' +
+                        '--g:' + (14 + rnd() * 8).toFixed(0) + 'px;--spike:' + (12 + rnd() * 10).toFixed(0) + 'px;' +
+                        '--sd:' + (6 + rnd() * 5).toFixed(1) + 's;';
+                    layers.near.appendChild(hero);
+                    placed++;
+                }
+
+                for (var i = 0; i < COUNT - placed; i++) {
+                    var r = rnd();
+                    var tier = r < tiers[0].cut ? tiers[0] : (r < tiers[1].cut ? tiers[1] : tiers[2]);
+                    var x, y;
+                    if (rnd() < 0.62) {
+                        var pick = rnd() * totalW, cl = clusters[0];
+                        for (var k = 0; k < clusters.length; k++) {
+                            pick -= clusters[k].w;
+                            if (pick <= 0) { cl = clusters[k]; break; }
+                        }
+                        x = clampPct(cl.x + bell() * cl.r, 1, 99);
+                        y = clampPct(cl.y + bell() * cl.r, 1, 95);
+                    } else {
+                        x = rnd() * 100;
+                        y = 100 * Math.pow(rnd(), 1.35); // field stars lean toward the zenith
+                    }
+                    var size = tier.min + rnd() * (tier.max - tier.min);
+                    // Scintillation depth follows apparent size: small point sources flutter
+                    // faster than large resolved disks.
+                    var dur = (tier.dMin + rnd() * (tier.dMax - tier.dMin)) * (1.5 - size / tier.max * 0.5);
+                    // Resolved disks and distant point sources do not scintillate.
+                    var steady = rnd() < (size > 2.6 ? 0.35 : 0.12);
+                    var cssText = 'left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;' +
+                        '--s:' + size.toFixed(1) + 'px;--c:' + tint(tier.aMin + rnd() * (tier.aMax - tier.aMin)) + ';' +
+                        '--d:' + dur.toFixed(1) + 's;--dl:' + (rnd() * 8).toFixed(1) + 's;';
+                    if (tier.name === 'near') cssText += '--g:' + (6 + rnd() * 8).toFixed(0) + 'px;';
+                    var star = document.createElement('div');
+                    star.className = 'star star--' + tier.name + (steady ? ' star--steady' : '');
+                    star.style.cssText = cssText;
+                    layers[tier.name].appendChild(star);
+                }
+
+                // Planets: warm, non-twinkling disks sitting low in the sky.
+                var planets = ['rgba(242, 214, 180, 0.85)', 'rgba(206, 222, 248, 0.80)'];
+                for (var p = 0; p < 2; p++) {
+                    var planet = document.createElement('div');
+                    planet.className = 'star star--near star--planet';
+                    planet.style.cssText = 'left:' + (12 + rnd() * 76).toFixed(2) + '%;top:' + (62 + rnd() * 22).toFixed(2) + '%;' +
+                        '--s:' + (3.2 + rnd() * 1.4).toFixed(1) + 'px;--c:' + planets[p] + ';' +
+                        '--g:' + (7 + rnd() * 4).toFixed(0) + 'px;';
+                    layers.near.appendChild(planet);
+                }
+
                 starsContainer.appendChild(frag);
             }
 
             // Shooting stars — randomized position, angle, speed, and interval
             var starContainer = document.getElementById('shootingStars');
-            if (starContainer && window.requestAnimationFrame) {
+            if (starContainer) {
                 var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                if (!reduceMotion) {
-                    (function spawnLoop() {
-                        spawnShootingStar();
-                        setTimeout(spawnLoop, 3000 + Math.random() * 9000);
-                    })();
-                }
-
                 function spawnShootingStar() {
                     var el = document.createElement('div');
-                    el.className = 'shooting-star';
+                    var fireball = Math.random() < 0.18;
+                    el.className = 'shooting-star' + (fireball ? ' shooting-star--fireball' : '');
 
                     // Start position — biased toward upper portion of viewport
                     var sx = 5 + Math.random() * 85;   // 5–90 vw
@@ -579,6 +813,8 @@
 
                     // Brightness variation
                     var alpha = 0.65 + Math.random() * 0.3;
+                    var glowColors = ['rgba(0,243,255,0.22)', 'rgba(180,0,255,0.20)', 'rgba(255,255,255,0.25)'];
+                    var glow = glowColors[(Math.random() * glowColors.length) | 0];
 
                     el.style.cssText =
                         'top:' + sy + 'vh;' +
@@ -588,9 +824,21 @@
                         'border-radius:' + thickness + 'px;' +
                         'background:linear-gradient(90deg,transparent,rgba(255,255,255,' + alpha.toFixed(2) + '));' +
                         'transform-origin:100% 50%;' +
+                        '--sglow:' + glow + ';' +
                         'opacity:0;';
 
                     starContainer.appendChild(el);
+
+                    // Ionized train lingers after the head has travelled on
+                    var train = null;
+                    if (fireball) {
+                        train = document.createElement('div');
+                        train.className = 'meteor-train';
+                        train.style.cssText = 'top:' + sy + 'vh;left:' + sx + 'vw;width:' + tailLen + 'px;' +
+                            'transform:rotate(' + angle + 'deg);transform-origin:100% 50%;--train:' + glow + ';';
+                        starContainer.appendChild(train);
+                        train.addEventListener('animationend', function () { train.remove(); });
+                    }
 
                     // Animate: rotate to angle, travel along local X axis (the rotated direction)
                     var anim = el.animate([
@@ -605,6 +853,42 @@
 
                     anim.onfinish = function () { el.remove(); };
                 }
+
+                // Satellites: slow, steady, straight-line movers — a different rhythm from meteors.
+                function spawnSatellite() {
+                    if (starContainer.querySelectorAll('.satellite').length >= 3) return;
+                    var el = document.createElement('div');
+                    el.className = 'satellite';
+                    var angleDeg = 8 + Math.random() * 40;
+                    var angle = Math.random() > 0.25 ? angleDeg : (180 - angleDeg);
+                    var dur = 22 + Math.random() * 26;
+                    el.style.cssText = 'top:' + (4 + Math.random() * 56) + 'vh;left:' + (3 + Math.random() * 66) + 'vw;' +
+                        '--run:' + (35 + Math.random() * 45) + 'vw;--rot:' + angle + 'deg;--sd:' + dur.toFixed(1) + 's;';
+                    starContainer.appendChild(el);
+                    el.addEventListener('animationend', function () { el.remove(); });
+                }
+
+                function spawnLoop() {
+                    // Pause while the tab is hidden instead of burning timers off-screen.
+                    if (document.hidden) {
+                        setTimeout(spawnLoop, 5000);
+                        return;
+                    }
+                    spawnShootingStar();
+                    // Occasional meteor shower: a quick follow-up pair
+                    if (Math.random() < 0.15) {
+                        setTimeout(function () { spawnShootingStar(); }, 250 + Math.random() * 500);
+                    }
+                    setTimeout(spawnLoop, 3000 + Math.random() * 9000);
+                }
+
+                function satelliteLoop() {
+                    if (document.hidden) { setTimeout(satelliteLoop, 8000); return; }
+                    spawnSatellite();
+                    setTimeout(satelliteLoop, 14000 + Math.random() * 26000);
+                }
+
+                if (!reduceMotion) { spawnLoop(); satelliteLoop(); }
             }
 
             // Graceful fallback if the avatar image is missing
